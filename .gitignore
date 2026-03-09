@@ -1,0 +1,6 @@
+.antigravity/
+*.gradle
+*.iml
+*.lock
+build/
+.kotlin/
