@@ -13,6 +13,9 @@ repositories {
 
 val flinkVersion = "1.20.3"
 val kafkaConnectorVersion = "3.4.0-1.20"
+val jdbcConnectorVersion = "3.2.0-1.19"
+val clickhouseJdbcVersion = "0.6.0"
+val jacksonVersion = "2.15.2"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -20,6 +23,10 @@ dependencies {
     implementation("org.apache.flink:flink-streaming-java:$flinkVersion")
     implementation("org.apache.flink:flink-clients:$flinkVersion")
     implementation("org.apache.flink:flink-connector-kafka:$kafkaConnectorVersion")
+    implementation("org.apache.flink:flink-connector-jdbc:$jdbcConnectorVersion")
+
+    implementation("ru.yandex.clickhouse:clickhouse-jdbc:0.3.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     testImplementation(kotlin("test"))
 }
@@ -29,7 +36,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("com.example.flink.KafkaPrintJobKt")
+    mainClass.set("com.example.flink.KafkaToClickHouseJobKt")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -41,7 +48,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 tasks.jar {
     enabled = false
     manifest {
-        attributes["Main-Class"] = "com.example.flink.KafkaPrintJobKt"
+        attributes["Main-Class"] = "com.example.flink.KafkaToClickHouseJobKt"
     }
 }
 
