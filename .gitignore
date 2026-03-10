@@ -4,3 +4,4 @@
 *.lock
 build/
 .kotlin/
+.idea/

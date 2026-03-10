@@ -1,0 +1,41 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: local-clickhouse
+    hostname: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-default}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --query 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  clickhouse-ui:
+    image: spoonest/clickhouse-tabix-web-client:latest
+    container_name: local-clickhouse-ui
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - "8088:80"
+    environment:
+      CH_NAME: "local-clickhouse"
+      CH_HOST: "clickhouse:8123"
+      CH_LOGIN: ${CLICKHOUSE_USER:-default}
+      CH_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+      CH_PARAMS: "add_http_cors_header=1"
+
+volumes:
+  clickhouse_data:
+  clickhouse_logs:

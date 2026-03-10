@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 
 fun main() {
     val env = StreamExecutionEnvironment.getExecutionEnvironment()
-    env.setParallelism(1)
+    env.parallelism = 1
 
     val source =
             KafkaSource.builder<String>()
