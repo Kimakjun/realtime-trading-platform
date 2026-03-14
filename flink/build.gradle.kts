@@ -36,7 +36,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("com.example.flink.KafkaToClickHouseJobKt")
+    mainClass.set("com.example.flink.KafkaOrderProcessingJobKt")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -48,7 +48,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 tasks.jar {
     enabled = false
     manifest {
-        attributes["Main-Class"] = "com.example.flink.KafkaToClickHouseJobKt"
+        attributes["Main-Class"] = "com.example.flink.KafkaOrderProcessingJobKt"
     }
 }
 

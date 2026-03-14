@@ -1,7 +1,6 @@
 package com.example.flink
 
 import com.example.flink.parser.OrderEventParser
-import com.example.flink.sink.ClickHouseSink
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.connector.kafka.source.KafkaSource
@@ -34,7 +33,7 @@ fun main() {
     parsedStream.print()
 
     // 3. ClickHouse Sink 적용
-    parsedStream.addSink(ClickHouseSink.create())
+    parsedStream.addSink(com.example.flink.sink.ClickHouseNormalizedSink.create())
 
     env.execute("kafka-to-clickhouse-job")
 }

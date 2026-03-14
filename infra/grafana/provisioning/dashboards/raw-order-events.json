@@ -1,0 +1,92 @@
+{
+    "title": "Raw Order Events",
+    "uid": "raw-order-events-1",
+    "panels": [
+        {
+            "title": "Events per Minute",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "datasource": "ClickHouse",
+                    "queryType": "sql",
+                    "rawSql": "SELECT toStartOfMinute(event_time) AS time, count() AS value FROM trading.raw_order_events GROUP BY time ORDER BY time"
+                }
+            ]
+        },
+        {
+            "title": "Events by Type",
+            "type": "barchart",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 8
+            },
+            "targets": [
+                {
+                    "datasource": "ClickHouse",
+                    "queryType": "sql",
+                    "rawSql": "SELECT event_type, count() AS value FROM trading.raw_order_events GROUP BY event_type ORDER BY value DESC"
+                }
+            ]
+        },
+        {
+            "title": "Events by Symbol",
+            "type": "barchart",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 8
+            },
+            "targets": [
+                {
+                    "datasource": "ClickHouse",
+                    "queryType": "sql",
+                    "rawSql": "SELECT symbol, count() AS value FROM trading.raw_order_events GROUP BY symbol ORDER BY value DESC LIMIT 10"
+                }
+            ]
+        },
+        {
+            "title": "Orders by Status",
+            "type": "barchart",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "targets": [
+                {
+                    "datasource": "ClickHouse",
+                    "queryType": "sql",
+                    "rawSql": "SELECT status, count() AS count FROM trading.order_state_current GROUP BY status ORDER BY count DESC"
+                }
+            ]
+        },
+        {
+            "title": "Unfilled Quantity by Symbol",
+            "type": "barchart",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
+            "targets": [
+                {
+                    "datasource": "ClickHouse",
+                    "queryType": "sql",
+                    "rawSql": "SELECT symbol, sum(remaining_qty) AS remaining FROM trading.order_state_current GROUP BY symbol ORDER BY remaining DESC"
+                }
+            ]
+        }
+    ],
+    "schemaVersion": 38
+}
