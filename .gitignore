@@ -5,3 +5,7 @@
 build/
 .kotlin/
 .idea/
+docs/
+domain/
+spec/
+.bkit

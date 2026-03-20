@@ -27,6 +27,7 @@ dependencies {
 
     implementation("ru.yandex.clickhouse:clickhouse-jdbc:0.3.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
 
     testImplementation(kotlin("test"))
 }
@@ -71,4 +72,11 @@ tasks.startScripts {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register<JavaExec>("runSimulator") {
+    group = "application"
+    description = "Runs the Order Event Simulator to generate realistic order flows to Kafka."
+    mainClass.set("com.example.simulator.OrderEventSimulatorKt")
+    classpath = sourceSets["main"].runtimeClasspath
 }
