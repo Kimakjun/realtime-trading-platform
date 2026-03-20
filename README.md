@@ -31,6 +31,13 @@ bash infra/scripts/start-all.sh
 bash infra/scripts/stop-all.sh
 ```
 
+### 시뮬레이터 실행 (Simulator)
+인프라(Kafka 등)가 실행된 상태에서, 무작위 데이터가 아닌 실제 트레이딩과 유사한 생애주기(CREATED -> FILLED/CANCELED)를 갖는 가상 주문 데이터를 `order-events.raw` 토픽에 실시간으로 생성합니다.
+```bash
+# 시뮬레이터 백그라운드 대신 포그라운드로 실행 (종료는 Ctrl+C)
+bash infra/scripts/run-simulator.sh
+```
+
 ### 개별 실행 (수동)
 
 <details>
