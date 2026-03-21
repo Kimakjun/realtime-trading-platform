@@ -8,22 +8,28 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import org.apache.flink.api.common.functions.FlatMapFunction
+import org.apache.flink.api.common.functions.RichFlatMapFunction
+import org.apache.flink.configuration.Configuration
 import org.apache.flink.util.Collector
 import org.slf4j.LoggerFactory
 
-class OrderEventParser : FlatMapFunction<String, NormalizedOrderEvent> {
+class OrderEventParser : RichFlatMapFunction<String, NormalizedOrderEvent>() {
     private val log = LoggerFactory.getLogger(OrderEventParser::class.java)
 
-    @Transient private var mapper: ObjectMapper? = null
+    @Transient private lateinit var mapper: ObjectMapper
+
+    /**
+     * Flink 태스크 초기화 시 1회만 호출된다.
+     * ObjectMapper를 여기서 생성하면 flatMap() 매 호출마다 null 체크할 필요 없음.
+     */
+    override fun open(parameters: Configuration) {
+        mapper = jacksonObjectMapper()
+    }
 
     override fun flatMap(value: String, out: Collector<NormalizedOrderEvent>) {
-        if (mapper == null) {
-            mapper = jacksonObjectMapper()
-        }
 
         try {
-            val event = mapper!!.readValue<OrderEvent>(value)
+            val event = mapper.readValue<OrderEvent>(value)
 
             // Validation 1: orderId 필수
             val orderId = event.orderId

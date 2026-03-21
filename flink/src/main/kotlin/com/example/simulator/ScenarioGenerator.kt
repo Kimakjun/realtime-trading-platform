@@ -46,96 +46,96 @@ class ScenarioGenerator {
         val r = Random.nextDouble()
 
         val newEvent =
-                when {
-                    isStale || r < 0.1 -> { // 10% 확률 또는 오래된 주문 -> 취소
-                        val event =
-                                OrderEvent(
-                                        eventId = eventId,
-                                        orderId = targetOrderId,
-                                        accountId = activeOrder.originalEvent.accountId,
-                                        symbol = activeOrder.originalEvent.symbol,
-                                        eventType = OrderEventType.CANCELED.name,
-                                        quantity = remainingQty,
-                                        price = activeOrder.originalEvent.price,
-                                        eventTime = nowIso
-                                )
-                        activeOrders.remove(targetOrderId) // 완료된 주문 삭제
-                        event
-                    }
-                    r < 0.15 -> { // 5% 확률 -> 수량 변경 (MODIFIED)
-                        val newQty = activeOrder.currentQty + Random.nextLong(-10, 50)
-                        if (newQty <= activeOrder.filledQty) {
-                            // 수량을 이미 체결된 양보다 줄일 수 없음 -> CANCELED 취급
-                            activeOrders.remove(targetOrderId)
-                            OrderEvent(
-                                    eventId = eventId,
-                                    orderId = targetOrderId,
-                                    accountId = activeOrder.originalEvent.accountId,
-                                    symbol = activeOrder.originalEvent.symbol,
-                                    eventType = OrderEventType.CANCELED.name,
-                                    quantity = remainingQty,
-                                    price = activeOrder.originalEvent.price,
-                                    eventTime = nowIso
-                            )
-                        } else {
-                            activeOrder.currentQty = newQty
-                            OrderEvent(
-                                    eventId = eventId,
-                                    orderId = targetOrderId,
-                                    accountId = activeOrder.originalEvent.accountId,
-                                    symbol = activeOrder.originalEvent.symbol,
-                                    eventType = OrderEventType.MODIFIED.name,
-                                    quantity = newQty,
-                                    price = activeOrder.originalEvent.price,
-                                    eventTime = nowIso
-                            )
-                        }
-                    }
-                    r < 0.6 -> { // 45% 확률 -> 전량 체결
-                        val fillEvent =
-                                OrderEvent(
-                                        eventId = eventId,
-                                        orderId = targetOrderId,
-                                        accountId = activeOrder.originalEvent.accountId,
-                                        symbol = activeOrder.originalEvent.symbol,
-                                        eventType = OrderEventType.FILLED.name,
-                                        quantity = remainingQty,
-                                        price = activeOrder.originalEvent.price,
-                                        eventTime = nowIso
-                                )
-                        activeOrders.remove(targetOrderId) // 완료된 주문 삭제
-                        fillEvent
-                    }
-                    else -> { // 나머지 40% 확률 -> 부분 체결
-                        val partialFillQty =
-                                if (remainingQty <= 1L) 1L else Random.nextLong(1, remainingQty + 1)
-                        if (partialFillQty >= remainingQty) { // 남은 수량을 다 채웠다면 FILLED
-                            activeOrders.remove(targetOrderId)
-                            OrderEvent(
-                                    eventId = eventId,
-                                    orderId = targetOrderId,
-                                    accountId = activeOrder.originalEvent.accountId,
-                                    symbol = activeOrder.originalEvent.symbol,
-                                    eventType = OrderEventType.FILLED.name,
-                                    quantity = remainingQty,
-                                    price = activeOrder.originalEvent.price,
-                                    eventTime = nowIso
-                            )
-                        } else {
-                            activeOrder.filledQty += partialFillQty
-                            OrderEvent(
-                                    eventId = eventId,
-                                    orderId = targetOrderId,
-                                    accountId = activeOrder.originalEvent.accountId,
-                                    symbol = activeOrder.originalEvent.symbol,
-                                    eventType = OrderEventType.PARTIALLY_FILLED.name,
-                                    quantity = partialFillQty,
-                                    price = activeOrder.originalEvent.price,
-                                    eventTime = nowIso
-                            )
-                        }
+            when {
+                isStale || r < 0.1 -> { // 10% 확률 또는 오래된 주문 -> 취소
+                    val event =
+                        OrderEvent(
+                            eventId = eventId,
+                            orderId = targetOrderId,
+                            accountId = activeOrder.originalEvent.accountId,
+                            symbol = activeOrder.originalEvent.symbol,
+                            eventType = OrderEventType.CANCELED.name,
+                            quantity = remainingQty,
+                            price = activeOrder.originalEvent.price,
+                            eventTime = nowIso
+                        )
+                    activeOrders.remove(targetOrderId) // 완료된 주문 삭제
+                    event
+                }
+                r < 0.15 -> { // 5% 확률 -> 수량 변경 (MODIFIED)
+                    val newQty = activeOrder.currentQty + Random.nextLong(-10, 50)
+                    if (newQty <= activeOrder.filledQty) {
+                        // 수량을 이미 체결된 양보다 줄일 수 없음 -> CANCELED 취급
+                        activeOrders.remove(targetOrderId)
+                        OrderEvent(
+                            eventId = eventId,
+                            orderId = targetOrderId,
+                            accountId = activeOrder.originalEvent.accountId,
+                            symbol = activeOrder.originalEvent.symbol,
+                            eventType = OrderEventType.CANCELED.name,
+                            quantity = remainingQty,
+                            price = activeOrder.originalEvent.price,
+                            eventTime = nowIso
+                        )
+                    } else {
+                        activeOrder.currentQty = newQty
+                        OrderEvent(
+                            eventId = eventId,
+                            orderId = targetOrderId,
+                            accountId = activeOrder.originalEvent.accountId,
+                            symbol = activeOrder.originalEvent.symbol,
+                            eventType = OrderEventType.MODIFIED.name,
+                            quantity = newQty,
+                            price = activeOrder.originalEvent.price,
+                            eventTime = nowIso
+                        )
                     }
                 }
+                r < 0.6 -> { // 45% 확률 -> 전량 체결
+                    val fillEvent =
+                        OrderEvent(
+                            eventId = eventId,
+                            orderId = targetOrderId,
+                            accountId = activeOrder.originalEvent.accountId,
+                            symbol = activeOrder.originalEvent.symbol,
+                            eventType = OrderEventType.FILLED.name,
+                            quantity = remainingQty,
+                            price = activeOrder.originalEvent.price,
+                            eventTime = nowIso
+                        )
+                    activeOrders.remove(targetOrderId) // 완료된 주문 삭제
+                    fillEvent
+                }
+                else -> { // 나머지 40% 확률 -> 부분 체결
+                    val partialFillQty =
+                        if (remainingQty <= 1L) 1L else Random.nextLong(1, remainingQty + 1)
+                    if (partialFillQty >= remainingQty) { // 남은 수량을 다 채웠다면 FILLED
+                        activeOrders.remove(targetOrderId)
+                        OrderEvent(
+                            eventId = eventId,
+                            orderId = targetOrderId,
+                            accountId = activeOrder.originalEvent.accountId,
+                            symbol = activeOrder.originalEvent.symbol,
+                            eventType = OrderEventType.FILLED.name,
+                            quantity = remainingQty,
+                            price = activeOrder.originalEvent.price,
+                            eventTime = nowIso
+                        )
+                    } else {
+                        activeOrder.filledQty += partialFillQty
+                        OrderEvent(
+                            eventId = eventId,
+                            orderId = targetOrderId,
+                            accountId = activeOrder.originalEvent.accountId,
+                            symbol = activeOrder.originalEvent.symbol,
+                            eventType = OrderEventType.PARTIALLY_FILLED.name,
+                            quantity = partialFillQty,
+                            price = activeOrder.originalEvent.price,
+                            eventTime = nowIso
+                        )
+                    }
+                }
+            }
 
         return newEvent
     }
@@ -148,36 +148,36 @@ class ScenarioGenerator {
 
         // 가격: 대략적인 기준 가격 (시뮬레이션 용)
         val basePrice =
-                when (symbol) {
-                    "BTC/USD" -> 60_000L
-                    "ETH/USD" -> 3_000L
-                    "XRP/USD" -> 1L
-                    "SOL/USD" -> 150L
-                    "ADA/USD" -> 1L
-                    else -> 100L
-                }
+            when (symbol) {
+                "BTC/USD" -> 60_000L
+                "ETH/USD" -> 3_000L
+                "XRP/USD" -> 1L
+                "SOL/USD" -> 150L
+                "ADA/USD" -> 1L
+                else -> 100L
+            }
         val offset = Math.max(1L, basePrice / 10)
         val price = basePrice + Random.nextLong(-offset, offset + 1)
 
         val newEvent =
-                OrderEvent(
-                        eventId = eventId,
-                        orderId = orderId,
-                        accountId = accountId,
-                        symbol = symbol,
-                        eventType = OrderEventType.CREATED.name,
-                        quantity = qty,
-                        price = price,
-                        eventTime = nowIso
-                )
+            OrderEvent(
+                eventId = eventId,
+                orderId = orderId,
+                accountId = accountId,
+                symbol = symbol,
+                eventType = OrderEventType.CREATED.name,
+                quantity = qty,
+                price = price,
+                eventTime = nowIso
+            )
 
         activeOrders[orderId] =
-                ActiveOrder(
-                        originalEvent = newEvent,
-                        currentQty = qty,
-                        filledQty = 0L,
-                        creationTimeMs = Instant.now().toEpochMilli()
-                )
+            ActiveOrder(
+                originalEvent = newEvent,
+                currentQty = qty,
+                filledQty = 0L,
+                creationTimeMs = Instant.now().toEpochMilli()
+            )
 
         return newEvent
     }
