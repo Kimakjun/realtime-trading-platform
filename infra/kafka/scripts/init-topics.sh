@@ -7,12 +7,12 @@ sleep 2
 echo "[init-topics] creating topics..."
 
 kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists \
-  --topic order-events.raw \
+  --topic raw_order_events \
   --partitions 3 \
   --replication-factor 1
 
 kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists \
-  --topic trade-events.raw \
+  --topic executed_orders \
   --partitions 3 \
   --replication-factor 1
 
